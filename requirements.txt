@@ -1,0 +1,6 @@
+git+https://github.com/Rapptz/discord.py
+wheel
+ffmpeg
+youtube_dl
+PyNaCl
+requests
