@@ -6,7 +6,7 @@ This is a pretty simple music bot that includes:
 - Chat commands (!help, !poll, !twitch)
 - Random commands (!toss, !roll, !meme, !poke)
 
-If you'd like to add my bot to your server, click [this link](https://discord.com/api/oauth2/authorize?client_id=713781013830041640&permissions=267513559&scope=bot)
+If you'd like to add my bot to your server, click [this link](https://discord.com/api/oauth2/authorize?client_id=713781013830041640&permissions=267513559&scope=bot).<br>If you have any issues or ideas, you can also join the bot's discord server [here](https://discord.gg/kGTku7H).
 
 # About the twitch command
 This command allows you to search for streams by specifying a category and words.<br>
