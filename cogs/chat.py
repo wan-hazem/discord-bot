@@ -1,5 +1,6 @@
 from discord import Embed, Color
 from discord.ext import commands
+from discord.utils import get as dget
 
 from requests import get, post
 from os import environ
@@ -43,10 +44,12 @@ class Chat(commands.Cog, name='Chat'):
             '💬 Rule n°7': "Self-promotions is forbidden! You can only share your projects in #your-projects."
         }
         embed = Embed(title="📃 Server's rules:", color=0xa84300)
+        embed.set_footer(text="Click ✔️ to access the server")
         for key, value in rules.items():
             embed.add_field(name=key, value=f"{value}\n", inline=False)
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
+        await msg.add_reaction('✅')
 
     @commands.command(brief='!poll "[question]" [choices]', description='Create a poll (9 maximum choices)')
     async def poll(self, ctx, *items):
@@ -87,6 +90,20 @@ class Chat(commands.Cog, name='Chat'):
                 return
         embed = Embed(title=f"❌ Something went wrong:", description="No available streams", color=0xe74c3c)
         await ctx.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        member = payload.member
+        if payload.emoji.name == '✅' and not member.bot:
+            channel = self.bot.get_channel(payload.channel_id)
+            message = await channel.fetch_message(payload.message_id) 
+            reaction = dget(message.reactions, emoji=payload.emoji.name)
+            role = dget(member.guild.roles, name='Member')
+            if not role in member.roles:
+                await member.add_roles(role)
+            else:
+                pass
+            await reaction.remove(member)
 
 
 def setup(bot):
