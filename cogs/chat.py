@@ -1,4 +1,4 @@
-from discord import Embed
+from discord import Embed, Color
 from discord.ext import commands
 
 from requests import get, post
@@ -29,6 +29,23 @@ class Chat(commands.Cog, name='Chat'):
                     pass
                 else:
                     embed.add_field(name=f"!{cmd.name}", value=f"{cmd.description} (`{cmd.brief}`)", inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)
+    async def rules(self, ctx):
+        rules = {
+            '👍 Rule n°1': "Respect eachother! For a nice and kind chat, don't swear or be mean.",
+            '🗳️ Rule n°2': "This server is dedicated to Hazard Wizard. That means no political or religious topics, racism, harassment or offensive content.",
+            '🔕 Rule n°3': "Don't spam and don't abuse mentions. We want clear and understandable chats, not a weird mess.",
+            '👦 Rule n°4': "Use an appropriate nickname and avatar. Keep it family-friendly.",
+            '🔒 Rule n°5': "Don't share personnal informations! Protect your privacy and other's privacy.",
+            '💛 Rule n°6': "Use your common sense. Do not do to others what you would not done to you.",
+            '💬 Rule n°7': "Self-promotions is forbidden! You can only share your projects in #your-projects."
+        }
+        embed = Embed(title="📃 Server's rules:", color=0xa84300)
+        for key, value in rules.items():
+            embed.add_field(name=key, value=f"{value}\n", inline=False)
+        await ctx.message.delete()
         await ctx.send(embed=embed)
 
     @commands.command(brief='!poll "[question]" [choices]', description='Create a poll (9 maximum choices)')
