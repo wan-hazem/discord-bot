@@ -1,10 +1,13 @@
 # About the bot
-This is a pretty simple music bot that includes:
+This is a pretty simple music bot writen in Pyhton 3.8.3, that includes:
 
-- Moderation commands (!ban, !unban, !kick, !mute)
-- Music commands (!play, !pause, !skip, !remove)
-- Chat commands (!help, !poll, !twitch)
-- Random commands (!toss, !roll, !meme, !poke)
+| Category |          Description            |
+|----------|---------------------------------|
+|Moderation|`!ban` `!unban` `!kick` `!mute`  |
+|Music     |`!play` `!pause` `!skip` `remove`|
+|Chat      |`!help` `!poll` `twitch`         |
+|Random    |`!toss` `!roll` `!meme` `!poke`  |
+|Weather   |`weather`                        |
 
 If you'd like to add my bot to your server, click [this link](https://discord.com/api/oauth2/authorize?client_id=713781013830041640&permissions=334622423&scope=bot).<br>If you have any issues or ideas, you can also join the bot's discord server [here](https://discord.gg/kGTku7H).
 
@@ -34,10 +37,11 @@ If you want to use the code, you'll have to:
   ```
     
 # Libraries version
-I use python 3.8.3 and:
-- discord → 1.0.1
-- discord.py → 1.4.1
-- PyNaCl → 1.4.0
-- requests → 2.24.0
-- wheel → 0.34.2
-- youtube-dl → 2020.6.16.1
+| Library  |  Version  |
+|----------|-----------|
+|discord   |1.0.1      |
+|discord.py|1.4.1      |
+|PyNaCl    |1.4.0      |
+|requests  |2.24.0     |
+|wheel     |0.34.2     |
+|youtube-dl|2020.6.16.1|
