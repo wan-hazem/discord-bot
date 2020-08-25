@@ -40,11 +40,7 @@ If you want to use the code, you'll have to:
   ```
     
 # Libraries version
-| Library  |  Version  |
-|----------|-----------|
-|discord   |1.0.1      |
-|discord.py|1.4.1      |
-|PyNaCl    |1.4.0      |
-|requests  |2.24.0     |
-|wheel     |0.34.2     |
-|youtube-dl|2020.6.16.1|
+
+| Library | discord |discord.py|  PyNaCl |requests |  wheel  |youtube-dl |
+|---------|---------|----------|---------|---------|---------|-----------|
+| Version |  1.0.1  |   1.4.1  |  1.4.0  |  2.24.0 |  0.34.2 |2020.6.16.1|
