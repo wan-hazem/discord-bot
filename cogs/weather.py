@@ -25,8 +25,8 @@ class Weather(commands.Cog, name='Weather'):
             'Weather': f"{data['weather'][0]['main']} - {data['weather'][0]['description']}",
             'Temperature': f"{data['main']['temp']}°C",
             'Feels like': f"{data['main']['feels_like']}°C",
-            'Min temp': f"{data['main']['temp_min']}°C",
-            'Max temp': f"{data['main']['temp_max']}°C",
+            'Min temperature': f"{data['main']['temp_min']}°C",
+            'Max temperature': f"{data['main']['temp_max']}°C",
             'Humidity': f"{data['main']['humidity']}%",
             'Pressure': f"{data['main']['pressure']} Pa",
             'Clouds': f"{data['clouds']['all']}%",
@@ -39,7 +39,7 @@ class Weather(commands.Cog, name='Weather'):
     @commands.command(brief='!weather [city]', description="City's instant and 5 day forecast")
     async def weather(self, ctx,  *, city):
         data = Weather.get_cast(city)
-        embed = Embed(title=f":white_sun_small_cloud: Weather in {data['Ville']} :", color=0x3498db)
+        embed = Embed(title=f":white_sun_small_cloud: Weather in {data['City']} :", color=0x3498db)
         for key, value in data.items():
             embed.add_field(name=key, value=value)
         embed.set_footer(text="Page 1/6")
@@ -85,7 +85,7 @@ class Weather(commands.Cog, name='Weather'):
         data = data[page-2] if payload.emoji.name == "◀️" else data[page]
         if page == 2 and datetime.now().strftime("%Y-%m-%d") == data[0]:
             data = Weather.get_cast(data[1])
-            embed = (Embed(title=f":white_sun_small_cloud: Weather in {data['Ville']} :", color=0x3498db)
+            embed = (Embed(title=f":white_sun_small_cloud: Weather in {data['City']} :", color=0x3498db)
                      .set_footer(text="Page 1/6"))
             for key, value in data.items():
                 embed.add_field(name=key, value=value)
