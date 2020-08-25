@@ -1,5 +1,5 @@
 # About the bot
-This is a pretty simple music bot writen in Pyhton 3.8.3.
+This is a pretty simple music bot writen in Pyhton 3.8.3.<br>
 If you'd like to add my bot to your server, click [this link](https://discord.com/api/oauth2/authorize?client_id=713781013830041640&permissions=334622423&scope=bot).<br>If you have any issues or ideas, you can also join the bot's discord server [here](https://discord.gg/kGTku7H).<br>
 Here's a command list:
 
