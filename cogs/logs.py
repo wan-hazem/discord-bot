@@ -144,8 +144,8 @@ class Logs(commands.Cog):
         elif before.roles != after.roles:
             new_roles = [role.name for role in after.roles if role not in before.roles]
             removed_roles = [role.name for role in before.roles if role not in after.roles]
-            new_roles = "New roles: "+"".join(new_roles) if new_roles else "None"
-            removed_roles = "Removed roles: "+"".join(removed_roles) if removed_roles else "None"
+            new_roles = "New roles: "+("".join(new_roles) if new_roles else "None")
+            removed_roles = "Removed roles: "+("".join(removed_roles) if removed_roles else "None")
             embed.add_field(name="Roles:", value=f"{new_roles}\n{removed_roles}")
         else:
             return
