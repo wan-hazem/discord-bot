@@ -78,7 +78,7 @@ class Logs(commands.Cog):
             return
 
         channel = get(ctx.guild.text_channels, name='logs')
-        state = 'enabled' if state==(ctx.guild.id, 1) else 'disabled'
+        state = 'disabled' if state==(ctx.guild.id, 1) else 'enabled'
 
         cmd = ctx.command.name
         cmd_args = ctx.message.content[len(cmd)+1:].split()
