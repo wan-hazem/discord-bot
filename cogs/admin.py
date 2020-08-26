@@ -1,7 +1,9 @@
-from discord import Member, User, Embed
+from discord import Member, Embed, Color
 from discord.ext import commands
 
 from asyncio import sleep
+from sqlite3 import connect
+from datetime import datetime
 
 class Moderation(commands.Cog, name='Moderation'):
     """
@@ -44,7 +46,7 @@ class Moderation(commands.Cog, name='Moderation'):
     @commands.command(brief='!ban [member] [reason]', description='Ban a member from the server')
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: Member, *, reason: str = None):
-        embed = Embed(title=":man_judge: User banned :", description=f'{ctx.author.mention} banned **{member}**.\nReason: {reason}', color=0xe74c3c)
+        embed = Embed(title=":man_judge: User banned", description=f'{ctx.author.mention} banned **{member}**.\nReason: {reason}', color=0xe74c3c)
         await member.ban(reason=reason)
         await ctx.send(embed=embed)
 
@@ -57,11 +59,41 @@ class Moderation(commands.Cog, name='Moderation'):
             await ctx.send(embed=embed); return
         for entry in ban_list:
             if member.lower() in entry.user.name.lower():
-                embed = Embed(title=":man_judge: User unbanned:", description=f'{ctx.author.mention} unbanned **{entry.user.mention}**.\nReason: {reason}', color=0xe74c3c)
+                embed = Embed(title=":man_judge: User unbanned", description=f'{ctx.author.mention} unbanned **{entry.user.mention}**.\nReason: {reason}', color=0xe74c3c)
                 await ctx.guild.unban(entry.user, reason=reason)
                 await ctx.send(embed=embed); return
         embed = Embed(title="Something went wrong:", description="No matching user!", color=0xe74c3c)
         await ctx.send(embed=embed); return
+
+    @commands.command(brief='!warn [member] [reason]', description='Warn a member')
+    async def warn(self, ctx, member: Member, *, reason: str):
+        now = datetime.now().strftime('%d/%m/%Y - %H:%M')
+        with connect('data.db') as conn:
+            c = conn.cursor()
+            c.execute(f'SELECT * FROM "{ctx.guild.id}" WHERE User_ID=?', (member.id,))
+            entry = c.fetchone()
+            if entry is None:
+                warns = f"[1] {now}\n{reason}\n\n"
+                c.execute(f'INSERT INTO "{ctx.guild.id}" (User_ID, Warns) VALUES (?, ?)', (member.id, warns))
+            else:
+                warn_nb, warns = len(list(entry)[1].split('\n\n')),  list(entry)[1]
+                warns = f"{warns}[{warn_nb}] {now}\n{reason}\n\n"
+                c.execute(f'UPDATE "{ctx.guild.id}" SET Warns=? WHERE User_ID=?', (warns, member.id))
+            conn.commit()
+        embed = Embed(title='⚠️ User warned', description=f'{ctx.author.mention} warned {member.mention}\n**Reason:** {reason}', color=0xe74c3c)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def warns(self, ctx, member: Member):
+        with connect('data.db') as conn:
+            c = conn.cursor()
+            c.execute(f'SELECT * FROM "{ctx.guild.id}" WHERE User_ID=?', (member.id,))
+            user_id, warns = c.fetchone()
+        embed = Embed(title=f"Warn list", description=member.mention, color=0xe74c3c)
+        for warn in warns.split('\n\n')[:-1]:
+            date, reason = warn.split('\n')
+            embed.add_field(name=date, value=reason, inline=False)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

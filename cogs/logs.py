@@ -23,7 +23,7 @@ class Logs(commands.Cog):
     def get_data(guild_id):
         with connect('data.db') as conn:
             c = conn.cursor()
-            c.execute("SELECT * FROM guilds WHERE ID=?", (guild_id,))
+            c.execute("SELECT * FROM logs WHERE ID=?", (guild_id,))
             return c.fetchone()
 
     @commands.command(hidden=True)
@@ -34,46 +34,40 @@ class Logs(commands.Cog):
         with connect('data.db') as conn:
             c = conn.cursor()
             if state == None:
-                c.execute("INSERT INTO guilds(ID, State) VALUES(?, ?)", (ctx.guild.id, 1))
+                c.execute("INSERT INTO logs(ID, State) VALUES(?, ?)", (ctx.guild.id, 1))
             elif state == (ctx.guild.id, 0):
-                c.execute("UPDATE guilds SET State=? WHERE ID=?", (1, ctx.guild.id))
+                c.execute("UPDATE logs SET State=? WHERE ID=?", (1, ctx.guild.id))
             else:
-                c.execute("UPDATE guilds SET State=? WHERE ID=?", (0, ctx.guild.id))
+                c.execute("UPDATE logs SET State=? WHERE ID=?", (0, ctx.guild.id))
             conn.commit()
             state = 'disabled' if state==(ctx.guild.id, 0) else 'enabled'
             await ctx.send(f"Logs {state}", delete_after=5.0)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            msg = f'You forgot arguments: {error.param.name}'
-        elif isinstance(error, commands.CommandNotFound):
-            msg = 'Command not found!'
-        elif isinstance(error, commands.MissingPermissions):
-            msg = "You can't use this command!"
-        elif isinstance(error, commands.BotMissingPermissions):
-            perms = ', '.join(error.missing_perms)
-            msg = f'I need the following perms to do this: {perms} !'
-        elif isinstance(error, commands.BadArgument):
-            if 'int' in str(error):
-                msg = 'You must input an integer!'
-            elif 'Member' in str(error):
-                msg = "Membre introuvable !"
-        elif isinstance(error, commands.CommandInvokeError):
-            if 'index' in str(error):
-                msg = "Index error!"
-            elif 'NoneType' in str(error):
-                msg = "I'm not connected to any channel!" if 'is_playing' in str(error) else "You're not connected to any channel!"
-            elif ('ValueError' or 'KeyError') in str(error):
-                msg = 'Wrong arguments!'
-            elif 'Missing Permissions' in str(error):
-                msg = "I'm not allowed to do this!"
-            else:
-                raise error
-        else:
+        param = error.param.name if isinstance(error, commands.MissingRequiredArgument) else ''
+        perms = ', '.join(error.missing_perms) if isinstance(error, commands.BotMissingPermissions) else ''
+        invoke_errors = {
+            'index': "Index error!",
+            'is_playing': "I'm not connected to any channel!",
+            'unpack': "User has no warns !",
+            'channel': "You're not connected to any channel!",
+            'Missing Permissions': "I'm not allowed to do this!",
+            'ValueError': 'Wrong arguments!',
+            'KeyError': 'Wrong arguments!'
+        }
+        errors = {
+            "<class 'discord.ext.commands.errors.MissingRequiredArgument'>": f'You forgot an argument: {param}',
+            "<class 'discord.ext.commands.errors.CommandNotFound'>": 'Command not found!',
+            "<class 'discord.ext.commands.errors.MissingPermissions'>": "You can't use this command!",
+            "<class 'discord.ext.commands.errors.BotMissingPermissions'>": f'I need the following perms to do this: {perms} !',
+            "<class 'discord.ext.commands.errors.BadArgument'>": 'You must input an integer!' if 'int' in str(error) else "Membre introuvable !",
+            "<class 'discord.ext.commands.errors.CommandInvokeError'>": ''.join([value for key, value in invoke_errors.items() if key in str(error)]),
+        }
+        clean_error = errors[str(type(error))]
+        if not clean_error:
             raise error
-
-        embed = Embed(title="❌ Something went wrong:", description=msg, color=0xe74c3c)
+        embed = Embed(title="❌ Something went wrong:", description=clean_error, color=0xe74c3c)
         await ctx.message.delete()
         await ctx.send(embed=embed, delete_after=5.0)
 
@@ -82,39 +76,29 @@ class Logs(commands.Cog):
         state = Logs.get_data(ctx.guild.id)
         if state == None or (ctx.command.name!='logs' and state==(ctx.guild.id, 0)):
             return
+
+        channel = get(ctx.guild.text_channels, name='logs')
+        state = 'enabled' if state==(ctx.guild.id, 1) else 'disabled'
+
         cmd = ctx.command.name
         cmd_args = ctx.message.content[len(cmd)+1:].split()
+        if len(cmd_args)<2:
+            cmd_args += ['', '']
         cmd_list = {
-            "ban": {"word": "banned", "color": 0xe74c3c},
-            "unban": {"word": "unbanned", "color": 0xc27c0e},
-            "kick": {"word": "kicked", "color": 0xe74c3c},
-            "mute": {"word": "muted", "color": 0xe74c3c},
-            "clear": {"word": "deleted", "color": 0x1f8b4c},
-            "poll": {"color": 0x7289da},
-            "logs": {"color": 0x11806a},
+            'ban': {'title:': ':man_judge: User banned', 'desc': f"{ctx.author.mention} banned {cmd_args[0]}\n**Reason:** {' '.join(cmd_args[1:])}", 'color': 0xe74c3c},
+            'unban': {'title': ':man_judge: User unbanned', 'desc': f"{ctx.author.mention} unbanned {cmd_args[0]}\n**Reason:** {' '.join(cmd_args[1:])}", 'color': 0xc27c0e},
+            'kick': {'title': ':man_judge: User kicked', 'desc': f"{ctx.author.mention} kicked {cmd_args[0]}\n**Reason:** {' '.join(cmd_args[1:])}", 'color': 0xe74c3c},
+            'warn': {'title': ':warning: User warned', 'desc':f"{ctx.author.mention} warned {cmd_args[0]}\n**Reason:** {' '.join(cmd_args[1:])}", 'color': 0xe67e22},
+            'mute': {'title': ':mute: User muted', 'desc': f"{ctx.author.mention} muted {cmd_args[0]}\n**Duration**: {cmd_args[1]}\n**Reason:** {' '.join(cmd_args[2:])}", 'color': 0xe74c3c},
+            'clear': {'title': ':wastebasket:  Messages deleted', 'desc': f"{ctx.author.mention} deleted {cmd_args[0]} messages.", 'color': 0x1f8b4c},
+            'poll': {'title': ':clipboard: Poll created', 'desc': f"Question: *{cmd_args[0]}*\nChoices: *{' / '.join(cmd_args[1:])}*\nBy {ctx.author.mention}",'color': 0x7289da},
+            'logs': {'title': f':printer: Logs {state}', 'desc': f'{ctx.author.mention} {state} logs', 'color': 0x11806a},
         }
-        channel = get(ctx.guild.text_channels, name='logs')
+
         if not cmd in cmd_list.keys():
             return
-        if cmd in ['ban', 'unban', 'kick']:
-            title = f":man_judge: User {cmd_list[cmd]['word']}"
-            description = f"{ctx.author.mention} {cmd_list[cmd]['word']} {cmd_args[0]}\n**Reason:** {' '.join(cmd_args[1:])}"
-        elif cmd == 'mute':
-            title = f":mute: User {cmd_list[cmd]['word']}"
-            description = f"{ctx.author.mention} {cmd_list[cmd]['word']} {cmd_args[0]}\n**Duration**: {cmd_args[1]}\n**Reason:** {' '.join(cmd_args[2:])}"
-        elif cmd == 'clear':
-            title = f":wastebasket:  Messages {cmd_list[cmd]['word']:}"
-            description = f"{ctx.author.mention} {cmd_list[cmd]['word']} {cmd_args[0]} messages."
-        elif cmd == 'poll':
-            title = ':clipboard: Poll created:'
-            description = f"Question: *{cmd_args[0]}*\nChoices: *{' / '.join(cmd_args[1:])}*\nBy {ctx.author.mention}"
-        elif cmd == 'logs':
-            state = 'enabled' if state==(ctx.guild.id, 1) else 'disabled'
-            title = f':printer: Logs {state}:'
-            description = f'{ctx.author.mention} {state.strip("s")} logs'
-        else:
-            return
-        embed = Logs.create_embed(title, description, cmd_list[cmd]['color'], datetime.now())
+
+        embed = Logs.create_embed(cmd_list[cmd]['title'], cmd_list[cmd]['desc'], cmd_list[cmd]['color'], datetime.now())
         await channel.send(embed=embed)
     
     @commands.Cog.listener()
@@ -138,7 +122,7 @@ class Logs(commands.Cog):
         state = Logs.get_data(before.guild.id)
         if state == None or state == (before.guild.id, 0): return
         channel = get(before.guild.text_channels, name='logs')
-        embed = Logs.create_embed(":notepad_spiral: Member modification:", before.mention, 0x99aab5, datetime.now())
+        embed = Logs.create_embed(":notepad_spiral: Member modification", before.mention, 0x99aab5, datetime.now())
         if before.display_name != after.display_name :
             embed.add_field(name="Nickname:", value=f"{before.display_name} → {after.display_name}")
         elif before.roles != after.roles:
@@ -153,14 +137,15 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        channel = self.bot.fetch_channel(730780408773345280)
+        channel = self.bot.fetch_channel(747480897426817095)
         with connect('data.db') as conn:
             c = conn.cursor()
-            c.execute("INSERT INTO guilds (ID, State) VALUES (?, ?)", (guild.id, 0))
+            c.execute("INSERT INTO logs (ID, State) VALUES (?, ?)", (guild.id, 0))
+            c.execute(f'CREATE TABLE IF NOT EXISTS "{guild.id}" (User_ID INTEGER, Warns TEXT)')
             conn.commit()
-        embed = Embed(title='📥 Joined a server', description=f"I joined this server: **{guild.name}**")
+        embed = Embed(title='📥 New server', description=f"I joined this server: **{guild.name}**")
         await channel.send(embed=embed)
-        
+
 
 def setup(bot):
     bot.add_cog(Logs(bot))
