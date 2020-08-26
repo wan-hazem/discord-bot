@@ -6,13 +6,13 @@
 # About the bot
 This is a pretty simple music bot writen in Pyhton 3.8.3. It includes:
 
-| Category |                    Description                    |
-|----------|---------------------------------------------------|
-|Moderation|`!ban` `!unban` `!kick` `!mute`,  `!warn`, `!warns`|
-|Music     |`!play` `!pause` `!skip` `!remove`                 |
-|Chat      |`!help` `!poll` `!twitch`                          |
-|Random    |`!toss` `!roll` `!meme` `!poke`                    |
-|Weather   |`!weather`                                         |
+| Category |                   Description                   |
+|----------|-------------------------------------------------|
+|Moderation|`!ban` `!unban` `!kick` `!mute`  `!warn` `!warns`|
+|Music     |`!play` `!pause` `!skip` `!remove`               |
+|Chat      |`!help` `!poll` `!twitch`                        |
+|Random    |`!toss` `!roll` `!meme` `!poke`                  |
+|Weather   |`!weather`                                       |
 
 # About the twitch command
 This command allows you to search for streams by specifying a category and words.<br>
