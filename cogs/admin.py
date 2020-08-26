@@ -66,6 +66,7 @@ class Moderation(commands.Cog, name='Moderation'):
         await ctx.send(embed=embed); return
 
     @commands.command(brief='!warn [member] [reason]', description='Warn a member')
+    @commands.has_permissions(manage_messages=True)
     async def warn(self, ctx, member: Member, *, reason: str):
         now = datetime.now().strftime('%d/%m/%Y - %H:%M')
         with connect('data.db') as conn:
@@ -84,6 +85,7 @@ class Moderation(commands.Cog, name='Moderation'):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.has_permissions(manage_messages=True)
     async def warns(self, ctx, member: Member):
         with connect('data.db') as conn:
             c = conn.cursor()
