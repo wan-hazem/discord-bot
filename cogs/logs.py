@@ -117,6 +117,10 @@ class Logs(commands.Cog):
         embed = Logs.create_embed(None, f'**:inbox_tray: {member.mention} joined the server**', 0x2ecc71, datetime.now())
         await channel.send(embed=embed)
 
+        embed = Logs.create_embed(":inbox_tray: New member !", f'{member.mention} joined the server', 0x2ecc71, datetime.now())
+        embed.set_image(url=member.avatar_url)
+        await member.guild.system_channel.send(embed=embed)
+
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         state = Logs.get_data(before.guild.id)
