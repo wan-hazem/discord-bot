@@ -4,7 +4,7 @@ from os import environ
 
 bot = commands.Bot(command_prefix=['!', '$'])
 bot.remove_command('help')
-initial_extensions = ['cogs.admin', 'cogs.music', 'cogs.chat', 'cogs.random', 'cogs.weather']
+initial_extensions = ['cogs.admin', 'cogs.music', 'cogs.chat', 'cogs.random', 'cogs.weather', 'cogs.logs']
 
 if __name__ == '__main__':
     for extension in initial_extensions:
