@@ -40,7 +40,7 @@ class Logs(commands.Cog):
             else:
                 c.execute("UPDATE logs SET State=? WHERE ID=?", (0, ctx.guild.id))
             conn.commit()
-            state = 'disabled' if state==(ctx.guild.id, 0) else 'enabled'
+            state = 'enabled' if state==(ctx.guild.id, 0) else 'disabled'
             await ctx.send(f"Logs {state}", delete_after=5.0)
 
     @commands.Cog.listener()
@@ -78,7 +78,7 @@ class Logs(commands.Cog):
             return
 
         channel = get(ctx.guild.text_channels, name='logs')
-        state = 'disabled' if state==(ctx.guild.id, 1) else 'enabled'
+        state = 'enabled' if state==(ctx.guild.id, 1) else 'disabled'
 
         cmd = ctx.command.name
         cmd_args = ctx.message.content[len(cmd)+1:].split()
@@ -105,6 +105,7 @@ class Logs(commands.Cog):
     async def on_member_remove(self, member):
         state = Logs.get_data(member.guild.id)
         if state == None or state == (member.guild.id, 0): return
+
         channel = get(member.guild.text_channels, name='logs')
         embed = Logs.create_embed(None, f'**:outbox_tray: {member.mention} left the server**', 0xe74c3c, datetime.now())
         await channel.send(embed=embed)
@@ -113,6 +114,7 @@ class Logs(commands.Cog):
     async def on_member_join(self, member):
         state = Logs.get_data(member.guild.id)
         if state == None or state == (member.guild.id, 0): return
+
         channel = get(member.guild.text_channels, name='logs')
         embed = Logs.create_embed(None, f'**:inbox_tray: {member.mention} joined the server**', 0x2ecc71, datetime.now())
         await channel.send(embed=embed)
@@ -125,9 +127,12 @@ class Logs(commands.Cog):
     async def on_member_update(self, before, after):
         state = Logs.get_data(before.guild.id)
         if state == None or state == (before.guild.id, 0): return
+
+        entry = await after.guild.audit_logs(limit=1).flatten()
         channel = get(before.guild.text_channels, name='logs')
-        embed = Logs.create_embed(":notepad_spiral: Member modification", before.mention, 0x99aab5, datetime.now())
-        if before.display_name != after.display_name :
+        embed = Logs.create_embed(":notepad_spiral: Member modification", f'{entry[0].user.mention} changed {before.mention}', 0x99aab5, datetime.now())
+
+        if before.display_name != after.display_name:
             embed.add_field(name="Nickname:", value=f"{before.display_name} → {after.display_name}")
         elif before.roles != after.roles:
             new_roles = [role.name for role in after.roles if role not in before.roles]
