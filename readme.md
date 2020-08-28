@@ -5,13 +5,13 @@
 # About the bot
 This is a pretty simple music bot writen in Pyhton 3.8.3. It includes:
 
-| Category |                        Description                         |
-|----------|------------------------------------------------------------|
-|Moderation|`!ban` `!unban` `!kick` `!mute`  `!warn` `!warns` `announce`|
-|Music     |`!play` `!pause` `!skip` `!remove`                          |
-|Chat      |`!help` `!poll` `!twitch`                                   |
-|Random    |`!toss` `!roll` `!meme` `!poke`                             |
-|Weather   |`!weather`                                                  |
+| Category |                        Description                          |
+|----------|-------------------------------------------------------------|
+|Moderation|`!ban` `!unban` `!kick` `!mute`  `!warn` `!warns` `!announce`|
+|Music     |`!play` `!pause` `!skip` `!remove`                           |
+|Chat      |`!help` `!poll` `!twitch`                                    |
+|Random    |`!toss` `!roll` `!meme` `!poke`                              |
+|Weather   |`!weather`                                                   |
 
 # Libraries version
 | Library | discord |discord.py|  PyNaCl |requests |  wheel  |youtube-dl |

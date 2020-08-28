@@ -100,7 +100,7 @@ class Moderation(commands.Cog, name='Moderation'):
             embed.add_field(name=date, value=reason, inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(brief='!announce [text]', description='Make an announcement')
     @commands.has_permissions(manage_messages=True)
     async def announce(self, ctx, *, text):
         embed = (Embed(title='New announcement !', description=text, timestamp=datetime.now(), color=0xf1c40f)
@@ -125,7 +125,7 @@ class Moderation(commands.Cog, name='Moderation'):
             pass
 
         await ctx.message.delete()
-        await ctx.send(embed=embed)
+        await ctx.send('@here', embed=embed)
 
 
 def setup(bot):
