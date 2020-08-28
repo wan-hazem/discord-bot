@@ -69,26 +69,21 @@ class Chat(commands.Cog, name='Chat'):
     @commands.command(brief='!twitch [game] [words]', description='Search for streams on twitch')
     async def twitch(self, ctx, game, *keys, streams=[]):
         headers = {
+            'Accept': 'application/vnd.twitchtv.v5+json',
             'Client-ID': environ['TWITCH_CLIENT'],
             'Authorization': f"Bearer {environ['TWITCH_TOKEN']}",
         }
-        topgames = get(f"https://api.twitch.tv/helix/games/top?first=100", headers=headers).json()
-        for category in topgames['data']:
-            if game.lower() in category['name'].lower():
-                embed = Embed(title=f":desktop: Streams ({category['name']}):", color=0x3498db)
-                stream_nb = 100 if keys else 20
-                response = get(f"https://api.twitch.tv/helix/streams?game_id={category['id']}&first={stream_nb}", headers=headers).json()
-                for stream in response['data']:
-                    if keys:
-                        for key in keys:
-                            if key.lower() in stream['title'].lower() and not stream in streams:
-                                streams.append(stream)
-                                embed.add_field(name=f"{stream['user_name']}", value=f"[{stream['title']}](https://twitch.tv/{stream['user_name']})")
-                    else:
+        category = get(f'https://api.twitch.tv/kraken/search/games?query={game}', headers=headers).json()['games'][0]
+        embed = Embed(title=f":desktop: Streams ({category['name']}):", color=0x3498db)
+        response = get(f"https://api.twitch.tv/helix/streams?game_id={category['_id']}", headers=headers).json()
+        for stream in response['data']:
+            if keys:
+                for key in keys:
+                    if key.lower() in stream['title'].lower() and not stream in streams:
+                        streams.append(stream)
                         embed.add_field(name=f"{stream['user_name']}", value=f"[{stream['title']}](https://twitch.tv/{stream['user_name']})")
-                await ctx.send(embed=embed)
-                return
-        embed = Embed(title=f"❌ Something went wrong:", description="No available streams", color=0xe74c3c)
+            else:
+                embed.add_field(name=f"{stream['user_name']}", value=f"[{stream['title']}](https://twitch.tv/{stream['user_name']})")
         await ctx.send(embed=embed)
 
     @commands.Cog.listener()
