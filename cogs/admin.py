@@ -115,13 +115,13 @@ class Moderation(commands.Cog, name='Moderation'):
                     *Tags:* {' '.join([f'`{topic}`' for topic in repo.get_topics()])}\n\
                     *Statistics:* {repo.stargazers_count} stars and {repo.get_views_traffic()['count']} views"
             embed.add_field(name=f'About {name}', value=desc)
-            embed.set_image(url=repo.owner.avatar_url)
+            embed.set_thumbnail(url=repo.owner.avatar_url)
         elif URL and 'discord.gg' in URL:
             invite = await self.bot.fetch_invite(URL)
             guild = invite.guild
             online = len([member for member in guild.members if member.status in [Status.online, Status.idle]])
             embed.add_field(name=f'About {guild.name}', value=f'Join here: {invite.url}\n🟢 {online} online 🟤 {guild.member_count} members', inline=False)
-            embed.set_image(url=guild.icon_url)
+            embed.set_thumbnail(url=guild.icon_url)
         else:
             pass
 
