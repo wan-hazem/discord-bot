@@ -106,7 +106,8 @@ class Moderation(commands.Cog, name='Moderation'):
         embed = (Embed(title='New announcement !', description=text, timestamp=datetime.now(), color=0xf1c40f)
                  .set_author(name=f'By {ctx.author.display_name}', icon_url=ctx.author.avatar_url))
 
-        if (URL:=findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text)[0]) and 'github.com' in URL:
+        URL = findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text)[0]
+        if URL and 'github.com' in URL:
             name = URL[19:]
             g = Github(environ['GITHUB_TOKEN'])
             repo = g.get_repo(name)
@@ -115,7 +116,7 @@ class Moderation(commands.Cog, name='Moderation'):
                     *Statistics:* {repo.stargazers_count} stars and {repo.get_views_traffic()['count']} views"
             embed.add_field(name=f'About {name}', value=desc)
             embed.set_image(url=repo.owner.avatar_url)
-        elif 'discord.gg' in URL:
+        elif URL and 'discord.gg' in URL:
             invite = await self.bot.fetch_invite(URL)
             guild = invite.guild
             online = len([member for member in guild.members if member.status in [Status.online, Status.idle]])
