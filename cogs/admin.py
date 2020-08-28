@@ -1,9 +1,12 @@
-from discord import Member, Embed, Color
+from discord import Member, Embed, Status, Color
 from discord.ext import commands
 
+from os import environ
 from asyncio import sleep
 from sqlite3 import connect
 from datetime import datetime
+from re import findall
+from github import Github
 
 class Moderation(commands.Cog, name='Moderation'):
     """
@@ -84,7 +87,7 @@ class Moderation(commands.Cog, name='Moderation'):
         embed = Embed(title='⚠️ User warned', description=f'{ctx.author.mention} warned {member.mention}\n**Reason:** {reason}', color=0xe74c3c)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(brief='!warns [member]', description="Get a member's warn list")
     @commands.has_permissions(manage_messages=True)
     async def warns(self, ctx, member: Member):
         with connect('data.db') as conn:
@@ -95,6 +98,33 @@ class Moderation(commands.Cog, name='Moderation'):
         for warn in warns.split('\n\n')[:-1]:
             date, reason = warn.split('\n')
             embed.add_field(name=date, value=reason, inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    async def announce(self, ctx, *, text):
+        embed = (Embed(title='New announcement !', description=text, timestamp=datetime.now(), color=0xf1c40f)
+                 .set_author(name=f'By {ctx.author.display_name}', icon_url=ctx.author.avatar_url))
+
+        if (URL:=findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text)[0]) and 'github.com' in URL:
+            name = URL[19:]
+            g = Github(environ['GITHUB_TOKEN'])
+            repo = g.get_repo(name)
+            desc = f"*Description:* {repo.description}\n\
+                    *Tags:* {' '.join([f'`{topic}`' for topic in repo.get_topics()])}\n\
+                    *Statistics:* {repo.stargazers_count} stars and {repo.get_views_traffic()['count']} views"
+            embed.add_field(name=f'About {name}', value=desc)
+            embed.set_image(url=repo.owner.avatar_url)
+        elif 'discord.gg' in URL:
+            invite = await self.bot.fetch_invite(URL)
+            guild = invite.guild
+            online = len([member for member in guild.members if member.status in [Status.online, Status.idle]])
+            embed.add_field(name=f'About {guild.name}', value=f'Join here: {invite.url}\n🟢 {online} online 🟤 {guild.member_count} members', inline=False)
+            embed.set_image(url=guild.icon_url)
+        else:
+            pass
+
+        await ctx.message.delete()
         await ctx.send(embed=embed)
 
 
