@@ -41,7 +41,9 @@ class Chat(commands.Cog, name='Chat'):
             '👦 Rule n°4': "Use an appropriate nickname and avatar. Keep it family-friendly.",
             '🔒 Rule n°5': "Don't share personnal informations! Protect your privacy and other's privacy.",
             '💛 Rule n°6': "Use your common sense. Do not do to others what you would not done to you.",
-            '💬 Rule n°7': "Self-promotions is forbidden! You can only share your projects in #your-projects."
+            '💬 Rule n°7': "Self-promotions is forbidden! You can only share your projects in #your-projects.",
+            '🙏 Rule n°8': "Don't beg for roles/permissions. It's just annoying and you'll never get roles by begging.",
+            '📑 Rule n°9': "Follow [Discord Community Guidelines](https://discord.com/guidelines) and [Terms Of Service](https://discord.com/terms).",
         }
         embed = Embed(title="📃 Server's rules:", color=0xa84300)
         embed.set_footer(text="Click ✔️ to access the server")
