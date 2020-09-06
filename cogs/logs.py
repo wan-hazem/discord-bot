@@ -1,5 +1,6 @@
 from discord import Embed, Colour
 from discord.ext import commands
+from discord import AuditLogAction
 from discord.utils import get
 
 from datetime import datetime, timezone
@@ -8,16 +9,6 @@ from sqlite3 import connect
 class Logs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    @staticmethod
-    def create_embed(title=None, description=None , color=None, timestamp=None):
-        embed = Embed(
-            title=title,
-            description=description,
-            color=color,
-            timestamp=timestamp
-        )
-        return embed
 
     @staticmethod
     def get_data(guild_id):
@@ -85,9 +76,6 @@ class Logs(commands.Cog):
         if len(cmd_args)<2:
             cmd_args += ['', '']
         cmd_list = {
-            'ban': {'title:': ':man_judge: User banned', 'desc': f"{ctx.author.mention} banned {cmd_args[0]}\n**Reason:** {' '.join(cmd_args[1:])}", 'color': 0xe74c3c},
-            'unban': {'title': ':man_judge: User unbanned', 'desc': f"{ctx.author.mention} unbanned {cmd_args[0]}\n**Reason:** {' '.join(cmd_args[1:])}", 'color': 0xc27c0e},
-            'kick': {'title': ':man_judge: User kicked', 'desc': f"{ctx.author.mention} kicked {cmd_args[0]}\n**Reason:** {' '.join(cmd_args[1:])}", 'color': 0xe74c3c},
             'warn': {'title': ':warning: User warned', 'desc':f"{ctx.author.mention} warned {cmd_args[0]}\n**Reason:** {' '.join(cmd_args[1:])}", 'color': 0xe67e22},
             'mute': {'title': ':mute: User muted', 'desc': f"{ctx.author.mention} muted {cmd_args[0]}\n**Duration**: {cmd_args[1]}\n**Reason:** {' '.join(cmd_args[2:])}", 'color': 0xe74c3c},
             'clear': {'title': ':wastebasket:  Messages deleted', 'desc': f"{ctx.author.mention} deleted {cmd_args[0]} messages.", 'color': 0x1f8b4c},
@@ -98,7 +86,7 @@ class Logs(commands.Cog):
         if not cmd in cmd_list.keys():
             return
 
-        embed = Logs.create_embed(cmd_list[cmd]['title'], cmd_list[cmd]['desc'], cmd_list[cmd]['color'], datetime.now())
+        embed = Embed(title=cmd_list[cmd]['title'], description=cmd_list[cmd]['desc'], color=cmd_list[cmd]['color'], timestamp=datetime.now())
         await channel.send(embed=embed)
     
     @commands.Cog.listener()
@@ -106,20 +94,37 @@ class Logs(commands.Cog):
         state = Logs.get_data(member.guild.id)
         if state == None or state == (member.guild.id, 0): return
 
+        entry = await member.guild.audit_logs(limit=1).flatten()
         channel = get(member.guild.text_channels, name='logs')
-        embed = Logs.create_embed(None, f'**:outbox_tray: {member.mention} left the server**', 0xe74c3c, datetime.now())
+
+        if entry[0].action == AuditLogAction.ban:
+            embed = Embed(title=':man_judge: User banned', description=f"{entry[0].user.mention} banned {entry[0].target.mention}\n**Reason:** {entry[0].reason}", color=0xe74c3c, timestamp=datetime.now())
+        elif entry[0].action == AuditLogAction.kick:
+            embed = Embed(title=':man_judge: User kicked', description=f"{entry[0].user.mention} kicked {entry[0].target.mention}\n**Reason:** {entry[0].reason}", color=0xe74c3c, timestamp=datetime.now())
+        else:
+            embed = Embed(description=f'**:outbox_tray: {member.mention} left the server**', color=0xe74c3c, timestamp=datetime.now())
         await channel.send(embed=embed)
-    
+
+    @commands.Cog.listener()
+    async def on_member_unban(self, guild, user):
+        state = Logs.get_data(guild.id)
+        if state == None or state == (guild.id, 0): return
+
+        entry = await guild.audit_logs(limit=1).flatten()
+        channel = get(guild.text_channels, name='logs')
+        embed = Embed(title=':man_judge: User unbanned', description=f"{entry[0].user.mention} unbanned {entry[0].target}\n**Reason:** {entry[0].reason}", color=0xc27c0e, timestamp=datetime.now())
+        await channel.send(embed=embed)
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         state = Logs.get_data(member.guild.id)
         if state == None or state == (member.guild.id, 0): return
 
         channel = get(member.guild.text_channels, name='logs')
-        embed = Logs.create_embed(None, f'**:inbox_tray: {member.mention} joined the server**', 0x2ecc71, datetime.now())
+        embed = Embed(description=f'**:inbox_tray: {member.mention} joined the server**', color=0x2ecc71, timestamp=datetime.now())
         await channel.send(embed=embed)
 
-        embed = Logs.create_embed(":inbox_tray: New member !", f'{member.mention} joined the server', 0x2ecc71, datetime.now())
+        embed = Embed(title=":inbox_tray: New member !", description=f'{member.mention} joined the server', color=0x2ecc71, timestamp=datetime.now())
         embed.set_image(url=member.avatar_url)
         await member.guild.system_channel.send(embed=embed)
 
@@ -130,7 +135,7 @@ class Logs(commands.Cog):
 
         entry = await after.guild.audit_logs(limit=1).flatten()
         channel = get(before.guild.text_channels, name='logs')
-        embed = Logs.create_embed(":notepad_spiral: Member modification", f'{entry[0].user.mention} changed {before.mention}', 0x99aab5, datetime.now())
+        embed = Embed(title=":notepad_spiral: Member modification", description=f'{entry[0].user.mention} changed {before.mention}', color=0x99aab5, timestamp=datetime.now())
 
         if before.display_name != after.display_name:
             embed.add_field(name="Nickname:", value=f"{before.display_name} → {after.display_name}")

@@ -49,7 +49,7 @@ class Moderation(commands.Cog, name='Moderation'):
     @commands.command(brief='!ban [member] [reason]', description='Ban a member from the server')
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: Member, *, reason: str = None):
-        embed = Embed(title=":man_judge: User banned", description=f'{ctx.author.mention} banned **{member}**.\nReason: {reason}', color=0xe74c3c)
+        embed = Embed(title=":man_judge: User banned", description=f'{ctx.author.mention} banned **{member.mention}**.\nReason: {reason}', color=0xe74c3c)
         await member.ban(reason=reason)
         await ctx.send(embed=embed)
 
