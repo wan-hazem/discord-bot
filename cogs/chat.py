@@ -57,13 +57,14 @@ class Chat(commands.Cog, name='Chat'):
     async def poll(self, ctx, *items):
         question = items[0]
         answers = '\n'.join(items[1:])
-        embed = Embed(title='New poll:', description=f":grey_question: __{question}__", color=0x3498db)
+        reactions = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣']
+        embed = (Embed(title=':clipboard: New poll', description=f"\> __{question}__", color=0x3498db)
+                 .set_author(name=f'By {ctx.author.display_name}', icon_url=ctx.author.avatar_url))
+
         await ctx.message.delete()
         for i in range(1, len(items)):
-            embed.add_field(name=f"Option n°{i}", value=items[i], inline=False)
-        embed.set_footer(text=f"Asked by: {ctx.author}")
+            embed.add_field(name=f"{reactions[i-1]} Option n°{i}", value=items[i], inline=False)
         message = await ctx.channel.send(embed=embed)
-        reactions = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣']
 
         for i in range(len(items[1:])):
             await message.add_reaction(reactions[i])
