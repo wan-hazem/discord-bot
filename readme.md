@@ -9,7 +9,7 @@ This is a pretty simple music bot writen in Pyhton 3.8.3. It includes:
 |----------|-------------------------------------------------------------|
 |Moderation|`!ban` `!unban` `!kick` `!mute`  `!warn` `!warns` `!announce`|
 |Music     |`!play` `!pause` `!skip` `!remove`                           |
-|Chat      |`!help` `!poll` `!twitch`                                    |
+|Chat      |`!help` `!poll` `!twitch` `!profile`                         |
 |Random    |`!toss` `!roll` `!meme` `!poke`                              |
 |Weather   |`!weather`                                                   |
 
