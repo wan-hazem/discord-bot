@@ -109,8 +109,9 @@ class Chat(commands.Cog, name='Chat'):
     async def profile(self, ctx, member: Member):
         with connect('data.db') as conn:
             c = conn.cursor()
-            c.execute(f'SELECT * FROM "{ctx.guild.id}" WHERE User_ID=?', (member.id,))
-            user_id, warns = c.fetchone()
+            c.execute(f'SELECT WARNS FROM "{ctx.guild.id}" WHERE User_ID=?', (member.id,))
+            entry = c.fetchone()
+            warn_nb = len(entry.split('\n')) if entry else 0
         flags = [str(flag)[10:].replace('_', ' ').capitalize() for flag in member.public_flags.all()]
         embed = (Embed(color=0x1abc9c)
                  .add_field(name='📥 Member Since', value=member.joined_at.strftime("%d %B, %Y"), inline=True)
@@ -118,7 +119,7 @@ class Chat(commands.Cog, name='Chat'):
                  .add_field(name='💡 Status', value=str(member.status).capitalize(), inline=True)
                  .add_field(name='📝 Account Creation', value=member.created_at.strftime("%d %B, %Y"), inline=True)
                  .add_field(name='🥇 Top role', value=member.top_role.name, inline=True)
-                 .add_field(name='⚠️ Warns', value='')
+                 .add_field(name='⚠️ Warns', value=f"{warn_nb} total warns")
                  .add_field(name='🚩 Flags', value=', '.join(flags))
                  .set_author(name=f"{ctx.author.display_name}'s profile", icon_url=ctx.author.avatar_url))
         if member.premium_since:
