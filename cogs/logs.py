@@ -14,8 +14,14 @@ class Logs(commands.Cog):
     def get_data(guild_id):
         with connect('data.db') as conn:
             c = conn.cursor()
-            c.execute("SELECT * FROM logs WHERE ID=?", (guild_id,))
-            return c.fetchone()
+            c.execute("SELECT State FROM logs WHERE ID=?", (guild_id,))
+            return int(c.fetchone()[0])
+
+    @staticmethod
+    def check_logs(guild, logs=False):
+        state = Logs.get_data(guild.id)
+        channel = get(guild.text_channels, name='logs')
+        return False if ((not state or channel is None) and not logs) else True
 
     @commands.command(hidden=True)
     @commands.has_permissions(administrator=True)
@@ -24,14 +30,14 @@ class Logs(commands.Cog):
         state = Logs.get_data(ctx.guild.id)
         with connect('data.db') as conn:
             c = conn.cursor()
-            if state == None:
+            if state is None:
                 c.execute("INSERT INTO logs(ID, State) VALUES(?, ?)", (ctx.guild.id, 1))
-            elif state == (ctx.guild.id, 0):
-                c.execute("UPDATE logs SET State=? WHERE ID=?", (1, ctx.guild.id))
-            else:
+            elif state:
                 c.execute("UPDATE logs SET State=? WHERE ID=?", (0, ctx.guild.id))
+            else:
+                c.execute("UPDATE logs SET State=? WHERE ID=?", (1, ctx.guild.id))
             conn.commit()
-            state = 'enabled' if state==(ctx.guild.id, 0) else 'disabled'
+            state = 'disabled' if state else 'enabled'
             await ctx.send(f"Logs {state}", delete_after=5.0)
 
     @commands.Cog.listener()
@@ -64,14 +70,14 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
+        cmd = ctx.command.name
         state = Logs.get_data(ctx.guild.id)
-        if state == None or (ctx.command.name!='logs' and state==(ctx.guild.id, 0)):
+        if not Logs.check_logs(ctx.guild, True if cmd=='logs' else False):
             return
 
         channel = get(ctx.guild.text_channels, name='logs')
-        state = 'enabled' if state==(ctx.guild.id, 1) else 'disabled'
-
-        cmd = ctx.command.name
+        state = 'enabled' if state else 'disabled'
+        
         cmd_args = ctx.message.content[len(cmd)+1:].split()
         if len(cmd_args)<2:
             cmd_args += ['', '']
@@ -91,8 +97,8 @@ class Logs(commands.Cog):
     
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        state = Logs.get_data(member.guild.id)
-        if state == None or state == (member.guild.id, 0): return
+        if not Logs.check_logs(member.guild):
+            return
 
         entry = await member.guild.audit_logs(limit=1).flatten()
         channel = get(member.guild.text_channels, name='logs')
@@ -107,8 +113,8 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, user):
-        state = Logs.get_data(guild.id)
-        if state == None or state == (guild.id, 0): return
+        if not Logs.check_logs(guild):
+            return
 
         entry = await guild.audit_logs(limit=1).flatten()
         channel = get(guild.text_channels, name='logs')
@@ -117,8 +123,8 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        state = Logs.get_data(member.guild.id)
-        if state == None or state == (member.guild.id, 0): return
+        if not Logs.check_logs(member.guild):
+            return
 
         channel = get(member.guild.text_channels, name='logs')
         embed = Embed(description=f'**:inbox_tray: {member.mention} joined the server**', color=0x2ecc71, timestamp=datetime.now())
@@ -130,8 +136,8 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        state = Logs.get_data(before.guild.id)
-        if state == None or state == (before.guild.id, 0): return
+        if not Logs.check_logs(before.guild):
+            return
 
         entry = await after.guild.audit_logs(limit=1).flatten()
         channel = get(before.guild.text_channels, name='logs')
