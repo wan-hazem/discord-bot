@@ -16,8 +16,4 @@ async def on_ready():
     await bot.change_presence(activity=Game(name='!help'))
     print(f'Bot is ready to go!')
 
-@bot.command(hidden=True)
-async def reload(ctx, extension):
-    bot.reload_extension(extension)
-
 bot.run(environ['BOT_TOKEN'], bot=True, reconnect = True)

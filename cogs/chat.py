@@ -1,8 +1,10 @@
-from discord import Embed, Color
+from discord import Embed, Member, Color
 from discord.ext import commands
 from discord.utils import get as dget
 
-from requests import get, post
+from requests import get
+from datetime import datetime
+from sqlite3 import connect
 from os import environ
 
 class Chat(commands.Cog, name='Chat'):
@@ -53,6 +55,20 @@ class Chat(commands.Cog, name='Chat'):
         msg = await ctx.send(embed=embed)
         await msg.add_reaction('✅')
 
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        member = payload.member
+        if payload.emoji.name == '✅' and not member.bot:
+            channel = self.bot.get_channel(payload.channel_id)
+            message = await channel.fetch_message(payload.message_id) 
+            reaction = dget(message.reactions, emoji=payload.emoji.name)
+            role = dget(member.guild.roles, name='Member')
+            if not role in member.roles:
+                await member.add_roles(role)
+            else:
+                pass
+            await reaction.remove(member)
+
     @commands.command(brief='!poll "[question]" [choices]', description='Create a poll (9 maximum choices)')
     async def poll(self, ctx, *items):
         question = items[0]
@@ -89,19 +105,25 @@ class Chat(commands.Cog, name='Chat'):
                 embed.add_field(name=f"{stream['user_name']}", value=f"[{stream['title']}](https://twitch.tv/{stream['user_name']})")
         await ctx.send(embed=embed)
 
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        member = payload.member
-        if payload.emoji.name == '✅' and not member.bot:
-            channel = self.bot.get_channel(payload.channel_id)
-            message = await channel.fetch_message(payload.message_id) 
-            reaction = dget(message.reactions, emoji=payload.emoji.name)
-            role = dget(member.guild.roles, name='Member')
-            if not role in member.roles:
-                await member.add_roles(role)
-            else:
-                pass
-            await reaction.remove(member)
+    @commands.command(brief='!profile [member]', description="Display member's profile")
+    async def profile(self, ctx, member: Member):
+        with connect('data.db') as conn:
+            c = conn.cursor()
+            c.execute(f'SELECT * FROM "{ctx.guild.id}" WHERE User_ID=?', (member.id,))
+            user_id, warns = c.fetchone()
+        flags = [str(flag)[10:].replace('_', ' ').capitalize() for flag in member.public_flags.all()]
+        embed = (Embed(color=0x1abc9c)
+                 .add_field(name='📥 Member Since', value=member.joined_at.strftime("%d %B, %Y"), inline=True)
+                 .add_field(name='⌨️ Nickname', value=f'{member.name}#{member.discriminator}', inline=True)
+                 .add_field(name='💡 Status', value=str(member.status).capitalize(), inline=True)
+                 .add_field(name='📝 Account Creation', value=member.created_at.strftime("%d %B, %Y"), inline=True)
+                 .add_field(name='🥇 Top role', value=member.top_role.name, inline=True)
+                 .add_field(name='⚠️ Warns', value='')
+                 .add_field(name='🚩 Flags', value=', '.join(flags))
+                 .set_author(name=f"{ctx.author.display_name}'s profile", icon_url=ctx.author.avatar_url))
+        if member.premium_since:
+            embed.add_field(name='📈 Boosting since', value=member.premium_since.strftime("%d %B, %Y"), inline=True)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

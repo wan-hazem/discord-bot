@@ -71,17 +71,15 @@ class Moderation(commands.Cog, name='Moderation'):
     @commands.command(brief='!warn [member] [reason]', description='Warn a member')
     @commands.has_permissions(manage_messages=True)
     async def warn(self, ctx, member: Member, *, reason: str):
-        now = datetime.now().strftime('%d/%m/%Y - %H:%M')
+        now = datetime.now().strftime('%d/%m/%Y@%H:%M')
         with connect('data.db') as conn:
             c = conn.cursor()
-            c.execute(f'SELECT * FROM "{ctx.guild.id}" WHERE User_ID=?', (member.id,))
+            c.execute(f'SELECT WARNS FROM "{ctx.guild.id}" WHERE User_ID=?', (member.id,))
             entry = c.fetchone()
+            warns = (''.join(entry) if entry else '') + f'{now} - {reason}\n'
             if entry is None:
-                warns = f"[1] {now}\n{reason}\n\n"
                 c.execute(f'INSERT INTO "{ctx.guild.id}" (User_ID, Warns) VALUES (?, ?)', (member.id, warns))
             else:
-                warn_nb, warns = len(list(entry)[1].split('\n\n')),  list(entry)[1]
-                warns = f"{warns}[{warn_nb}] {now}\n{reason}\n\n"
                 c.execute(f'UPDATE "{ctx.guild.id}" SET Warns=? WHERE User_ID=?', (warns, member.id))
             conn.commit()
         embed = Embed(title='⚠️ User warned', description=f'{ctx.author.mention} warned {member.mention}\n**Reason:** {reason}', color=0xe74c3c)
@@ -92,12 +90,13 @@ class Moderation(commands.Cog, name='Moderation'):
     async def warns(self, ctx, member: Member):
         with connect('data.db') as conn:
             c = conn.cursor()
-            c.execute(f'SELECT * FROM "{ctx.guild.id}" WHERE User_ID=?', (member.id,))
-            user_id, warns = c.fetchone()
-        embed = Embed(title=f"Warn list", description=member.mention, color=0xe74c3c)
-        for warn in warns.split('\n\n')[:-1]:
-            date, reason = warn.split('\n')
-            embed.add_field(name=date, value=reason, inline=False)
+            c.execute(f'SELECT WARNS FROM "{ctx.guild.id}" WHERE User_ID=?', (member.id,))
+            warns = ''.join(c.fetchone())
+        embed = Embed(color=0xe74c3c)
+        for warn in warns.split('\n')[:-1]:
+            date, reason = warn.split(' - ')
+            embed.add_field(name=f"🚨 {date.replace('@', ' - ')}", value=reason, inline=False)
+        embed.set_author(name=f"{member.display_name}'s warns", icon_url=member.avatar_url)
         await ctx.send(embed=embed)
 
     @commands.command(brief='!announce [text]', description='Make an announcement')
