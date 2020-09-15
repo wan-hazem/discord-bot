@@ -15,7 +15,12 @@ class Logs(commands.Cog):
         with connect('data.db') as conn:
             c = conn.cursor()
             c.execute("SELECT State FROM logs WHERE ID=?", (guild_id,))
-            return int(c.fetchone()[0])
+            if (guild:=c.fetchone()):
+                return int(guild[0])
+            else:
+                c.execute("INSERT INTO logs (ID, State) VALUES (?, ?)", (guild_id, 0))
+                conn.commit()
+                return False
 
     @staticmethod
     def check_logs(guild, logs=False):
