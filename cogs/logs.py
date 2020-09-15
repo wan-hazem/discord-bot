@@ -171,7 +171,7 @@ class Logs(commands.Cog):
         channel = await self.bot.fetch_channel(747480897426817095)
         invite = await guild.system_channel.create_invite()
         embed = (Embed(title='Click to join', url=invite.url, color=0xf1c40f)
-                 .set_author(name=f'Joined {guild.name}', icon_url=guild.icon))
+                 .set_author(name=f'Joined {guild.name}', icon_url=guild.icon_url))
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -179,7 +179,7 @@ class Logs(commands.Cog):
         print('No')
         with connect('data.db') as conn:
             c = conn.cursor()
-            c.execute("DELETE FROM logs WHERE ID=?", (guild.id))
+            c.execute("DELETE FROM logs WHERE ID=?", (guild.id,))
             c.execute(f'DROP TABLE"{guild.id}"')
             conn.commit()
         channel = await self.bot.fetch_channel(747480897426817095)
