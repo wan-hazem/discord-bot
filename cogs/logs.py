@@ -21,7 +21,6 @@ class Logs(commands.Cog):
                 conn.commit()
                 return False
             return int(entry[0])
-                
 
     @staticmethod
     def check_logs(guild, logs=False):
@@ -163,13 +162,29 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
+        print('Yes')
         with connect('data.db') as conn:
             c = conn.cursor()
             c.execute("INSERT INTO logs (ID, State) VALUES (?, ?)", (guild.id, 0))
             c.execute(f'CREATE TABLE IF NOT EXISTS "{guild.id}" (User_ID INTEGER, Warns TEXT)')
             conn.commit()
         channel = await self.bot.fetch_channel(747480897426817095)
-        embed = Embed(title='📥 New server', description=f"I joined this server: **{guild.name}**")
+        invite = await guild.system_channel.create_invite()
+        embed = (Embed(title='Click to join', url=invite.url, color=0xf1c40f)
+                 .set_author(name=f'Joined {guild.name}', icon_url=guild.icon))
+        await channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        print('No')
+        with connect('data.db') as conn:
+            c = conn.cursor()
+            c.execute("DELETE FROM logs WHERE ID=?", (guild.id))
+            c.execute(f'DROP TABLE"{guild.id}"')
+            conn.commit()
+        channel = await self.bot.fetch_channel(747480897426817095)
+        embed = (Embed(color=0xe74c3c)
+                 .set_author(name=f'Left {guild.name}', icon_url=guild.icon))
         await channel.send(embed=embed)
 
 
