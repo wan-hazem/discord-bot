@@ -171,7 +171,7 @@ class Logs(commands.Cog):
         channel = await self.bot.fetch_channel(747480897426817095)
         invite = await guild.system_channel.create_invite()
         embed = (Embed(title='Click to join', url=invite.url, color=0xf1c40f)
-                 .set_author(name=f'Joined {guild.name}', icon_url=guild.icon_url))
+                 .set_author(name=f'Joined "{guild.name}"', icon_url=guild.icon_url))
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -184,7 +184,7 @@ class Logs(commands.Cog):
             conn.commit()
         channel = await self.bot.fetch_channel(747480897426817095)
         embed = (Embed(color=0xe74c3c)
-                 .set_author(name=f'Left {guild.name}', icon_url=guild.icon))
+                 .set_author(name=f'Left "{guild.name}"', icon_url=guild.icon_url))
         await channel.send(embed=embed)
 
 
