@@ -1,4 +1,4 @@
-from discord import Embed
+from discord import Embed, Member
 from discord.ext import commands
 from discord.utils import get
 
@@ -24,7 +24,7 @@ class Random(commands.Cog, name='Random'):
             await ctx.send('❌ You must input either "heads" or "tails"!')         
 
     @commands.command(brief='!poke [random/nickname]', description="Mention someone")
-    async def poke(self, ctx, arg):
+    async def poke(self, ctx, arg: Member):
         members = [x for x in ctx.guild.members if not x.bot]
         if arg.lower() == 'random':
             await ctx.send(f'Hey {choice(members).mention} !')

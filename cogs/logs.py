@@ -157,12 +157,12 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        channel = self.bot.fetch_channel(747480897426817095)
         with connect('data.db') as conn:
             c = conn.cursor()
             c.execute("INSERT INTO logs (ID, State) VALUES (?, ?)", (guild.id, 0))
             c.execute(f'CREATE TABLE IF NOT EXISTS "{guild.id}" (User_ID INTEGER, Warns TEXT)')
             conn.commit()
+        channel = await self.bot.fetch_channel(747480897426817095)
         embed = Embed(title='📥 New server', description=f"I joined this server: **{guild.name}**")
         await channel.send(embed=embed)
 
