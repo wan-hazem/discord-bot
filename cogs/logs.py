@@ -162,7 +162,6 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        print('Yes')
         with connect('data.db') as conn:
             c = conn.cursor()
             c.execute("INSERT INTO logs (ID, State) VALUES (?, ?)", (guild.id, 0))
@@ -176,7 +175,6 @@ class Logs(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        print('No')
         with connect('data.db') as conn:
             c = conn.cursor()
             c.execute("DELETE FROM logs WHERE ID=?", (guild.id,))
