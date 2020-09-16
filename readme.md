@@ -3,7 +3,7 @@
 - You have any ideas or issues with the bot? [Join the discord server](https://discord.gg/kGTku7H)
 
 # About the bot
-This is a pretty simple music bot writen in Pyhton 3.8.3. It includes:
+This is a pretty simple music bot written in Pyhton 3.8.3. It includes:
 
 | Category |                        Description                          |
 |----------|-------------------------------------------------------------|
