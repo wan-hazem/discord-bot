@@ -36,14 +36,14 @@ class Music(commands.Cog, name='Music'):
                 .add_field(name='Duration', value=Music.parse_duration(info['duration']))
                 .add_field(name='Asked by', value=author)
                 .add_field(name='Uploader', value=f"[{info['uploader']}]({info['channel_url']})")
-                .add_field(name="Queue", value=f"No queued musics")
+                .add_field(name="Queue", value=f"No queued videos")
                 .set_thumbnail(url=info['thumbnail']))
 
         return {'embed': embed, 'source': info['formats'][0]['url'], 'title': info['title']}
 
     async def edit_message(self, ctx):
         embed = self.song_queue[ctx.guild][0]['embed']
-        content = "\n".join([f"({self.song_queue[ctx.guild].index(i)}) {i['title']}" for i in self.song_queue[ctx.guild][1:]]) if len(self.song_queue[ctx.guild]) > 1 else "Pas de musique en attente"
+        content = "\n".join([f"({self.song_queue[ctx.guild].index(i)}) {i['title']}" for i in self.song_queue[ctx.guild][1:]]) if len(self.song_queue[ctx.guild]) > 1 else "No queued videos"
         embed.set_field_at(index=3, name="Queue:", value=content, inline=False)
         await self.message[ctx.guild].edit(embed=embed)
 
