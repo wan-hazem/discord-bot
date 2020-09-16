@@ -168,9 +168,9 @@ class Logs(commands.Cog):
             c.execute(f'CREATE TABLE IF NOT EXISTS "{guild.id}" (User_ID INTEGER, Warns TEXT)')
             conn.commit()
         channel = await self.bot.fetch_channel(747480897426817095)
-        invite_channel = guild.system_channel if guild.system_channel else guild.text_channels[0]
-        invite = await invite_channel.create_invite()
-        embed = (Embed(title='Click to join', url=invite.url, color=0xf1c40f)
+        embed = (Embed(color=0xf1c40f)
+                 .add_field(name='👥 Members', value=guild.member_count)
+                 .add_field(name='🌍 Region', value=guild.region)
                  .set_author(name=f'Joined "{guild.name}"', icon_url=guild.icon_url))
         await channel.send(embed=embed)
 
