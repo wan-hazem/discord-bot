@@ -3,7 +3,7 @@
 - You have any ideas or issues with the bot? [Join the discord server](https://discord.gg/kGTku7H)
 
 # About the bot
-This is a pretty simple music bot writen in Pyhton 3.8.3. It includes:
+This is a pretty simple music bot written in Pyhton 3.8.3. It includes:
 
 | Category |                        Description                          |
 |----------|-------------------------------------------------------------|
@@ -37,7 +37,7 @@ If you want to use the code, you'll have to:
 # About the weather command
 This command will give you a city's instant and 5 days forecast.<br>
 If you want to use the code, you'll have to:
-- Create a Open>eatherMap [API key](https://home.openweathermap.org/api_keys)
+- Create a OpenWeatherMap [API key](https://home.openweathermap.org/api_keys)
 - Replace [this part](https://github.com/MrSpaar/discord-bot/blob/master/cogs/weather.py#L18-L21) to:
   ```python
   def get_cast(city, forecast=False):
@@ -50,7 +50,7 @@ If you want to use the code, you'll have to:
 # About the twitch command
 This command allows you to search for streams by specifying a category and words.<br>
 If you want to use the code, you'll have to:
-- Get a twitch token by [following those steps](https://dev.twitch.tv/docs/authentication)
+- Get a Twitch token by [following those steps](https://dev.twitch.tv/docs/authentication)
 - Replace [this part](https://github.com/MrSpaar/discord-bot/blob/master/cogs/chat.py#L51-L54) to:
   ```python
   headers = {
