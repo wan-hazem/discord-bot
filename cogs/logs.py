@@ -182,7 +182,7 @@ class Logs(commands.Cog):
             c.execute(f'DROP TABLE"{guild.id}"')
             conn.commit()
         channel = await self.bot.fetch_channel(747480897426817095)
-        embed = (Embed(color=0xf1c40f)
+        embed = (Embed(color=0xe74c3c)
                  .add_field(name='👥 Members', value=f'{guild.member_count} members')
                  .add_field(name='🌍 Region', value=str(guild.region).capitalize())
                  .set_author(name=f'Left "{guild.name}"', icon_url=guild.icon_url))
