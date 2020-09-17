@@ -9,7 +9,7 @@ from sqlite3 import connect
 
 class Weather(commands.Cog, name='Weather'):
     """
-    Can be used by everyone and allows you to get weather forecast.
+    Utilisable par tout le monde et permet d'avoir des prévisions météo.
     """
     def __init__(self, bot):
         self.bot = bot
@@ -20,26 +20,26 @@ class Weather(commands.Cog, name='Weather'):
             return rget(f"http://api.openweathermap.org/data/2.5/forecast?q={city}&units=metric&APPID={environ['WEATHER_TOKEN']}").json()
         data  = rget(f"http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&APPID={environ['WEATHER_TOKEN']}").json()
         cleared_data = {
-            'City': data['name'],
-            'Time': (datetime.utcfromtimestamp(data['dt']) + timedelta(hours=2)).strftime('%H:%M:%S'),
-            'Weather': f"{data['weather'][0]['main']} - {data['weather'][0]['description']}",
+            'Ville': data['name'],
+            'Heure': (datetime.utcfromtimestamp(data['dt']) + timedelta(hours=2)).strftime('%H:%M:%S'),
+            'Météo': f"{data['weather'][0]['main']} - {data['weather'][0]['description']}",
             'Temperature': f"{data['main']['temp']}°C",
-            'Feels like': f"{data['main']['feels_like']}°C",
-            'Min temperature': f"{data['main']['temp_min']}°C",
-            'Max temperature': f"{data['main']['temp_max']}°C",
-            'Humidity': f"{data['main']['humidity']}%",
-            'Pressure': f"{data['main']['pressure']} Pa",
-            'Clouds': f"{data['clouds']['all']}%",
-            'Wind': f"{data['wind']['speed']} km/h",
-            'Sunset': (datetime.utcfromtimestamp(data['sys']['sunset']) + timedelta(hours=2)).strftime('%H:%M:%S'),
-            'Sunrise': (datetime.utcfromtimestamp(data['sys']['sunrise']) + timedelta(hours=2)).strftime('%H:%M:%S'),
+            'Ressenti': f"{data['main']['feels_like']}°C",
+            'Temperature min': f"{data['main']['temp_min']}°C",
+            'Temperature max': f"{data['main']['temp_max']}°C",
+            'Humidité': f"{data['main']['humidity']}%",
+            'Pression': f"{data['main']['pressure']} Pa",
+            'Nuages': f"{data['clouds']['all']}%",
+            'Vent': f"{data['wind']['speed']} km/h",
+            'Coucher du soleil': (datetime.utcfromtimestamp(data['sys']['sunset']) + timedelta(hours=2)).strftime('%H:%M:%S'),
+            'Lever du soleil': (datetime.utcfromtimestamp(data['sys']['sunrise']) + timedelta(hours=2)).strftime('%H:%M:%S'),
         }
         return cleared_data
 
-    @commands.command(brief='!weather [city]', description="City's instant and 5 day forecast")
-    async def weather(self, ctx,  *, city):
+    @commands.command(brief='!meteo [ville]', description="Météo et prévisons sur 5 jours d'une ville")
+    async def meteo(self, ctx,  *, city):
         data = Weather.get_cast(city)
-        embed = Embed(title=f":white_sun_small_cloud: Weather in {data['City']} :", color=0x3498db)
+        embed = Embed(title=f":white_sun_small_cloud: Météo à {data['City']} :", color=0x3498db)
         for key, value in data.items():
             embed.add_field(name=key, value=value)
         embed.set_footer(text="Page 1/6")
@@ -85,12 +85,12 @@ class Weather(commands.Cog, name='Weather'):
         data = data[page-2] if payload.emoji.name == "◀️" else data[page]
         if page == 2 and datetime.now().strftime("%Y-%m-%d") == data[0]:
             data = Weather.get_cast(data[1])
-            embed = (Embed(title=f":white_sun_small_cloud: Weather in {data['City']} :", color=0x3498db)
+            embed = (Embed(title=f":white_sun_small_cloud: Météo à {data['City']} :", color=0x3498db)
                      .set_footer(text="Page 1/6"))
             for key, value in data.items():
                 embed.add_field(name=key, value=value)
         else:
-            embed = (Embed(title=f':white_sun_small_cloud: {data[0]} - Weather in {data[1]}:', color=0x3498db)
+            embed = (Embed(title=f':white_sun_small_cloud: {data[0]} - Météo à {data[1]}:', color=0x3498db)
                      .add_field(name=data[2], value='\u200b')
                      .set_footer(text=f"Page {page-1}/6" if payload.emoji.name == "◀️" else f"Page {page+1}/6"))
         await message.edit(embed=embed)
