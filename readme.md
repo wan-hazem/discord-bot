@@ -1,5 +1,5 @@
 # Liens d'invitation
-Vous voulez ce bot sur votre serveur ? [Cliquez sur ce lien !](https://discord.com/api/oauth2/authorize?client_id=713781013830041640&permissions=334622423&scope=bot)
+Vous voulez ce bot sur votre serveur ? [Cliquez sur ce lien !](https://discord.com/api/oauth2/authorize?client_id=713781013830041640&permissions=334622423&scope=bot)<br>
 Vous avez des idées, des recommendations ou des problèmes avec le bot ? [Rejoignez le discord !](https://discord.gg/H68KXcm)
 
 # E - Wizard
