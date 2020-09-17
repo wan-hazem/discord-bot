@@ -35,10 +35,10 @@ class Chat(commands.Cog, name='Chat'):
         await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
-    async def rules(self, ctx):
+    async def regles(self, ctx):
         rules = {
             '👍 Règle n°1': "Respect mutuel ! Pour un chat sympa et bienveillant, pas d'insultes ou de méchancetés",
-            '🗳️ Règle n°2': "C'est un serveur dédié à E - Wizard. Pas de sujets politiques, religieux et pas de racisme, de harcèlement ou de contenu offensif.",
+            '🗳️ Règle n°2': "C'est un serveur dédié à @E - Wizard#3217. Pas de sujets politiques, religieux et pas de racisme, de harcèlement ou de contenu offensif.",
             '🔕 Règle n°3': "Pas de spam ou de mentions abusives. Pour éviter d'avoir un chat qui ressembre à rien, évitez les abus.",
             '👦 Règle n°4': "Ayez un avatar et un pseudo approprié (family-friendly)",
             '🔒 Règle n°5': "Ne partagez pas vos informations personnelles ! Protégez votre intimité et celle des autres.",
