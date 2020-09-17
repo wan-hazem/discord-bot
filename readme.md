@@ -1,40 +1,40 @@
-# About the bot
-This is a pretty simple music bot written in Pyhton 3.8.3. It includes:
+# E - Wizard
+C'est un bot *tout-en-un* écris en python (3.8.3) qui contient:
 
-| Category |                        Description                          |
+| Categorie |                        Description                         |
 |----------|-------------------------------------------------------------|
-|Moderation|`!ban` `!unban` `!kick` `!mute`  `!warn` `!warns` `!announce`|
-|Music     |`!play` `!pause` `!skip` `!remove`                           |
-|Chat      |`!help` `!poll` `!twitch` `!profile`                         |
-|Random    |`!toss` `!roll` `!meme` `!poke`                              |
-|Weather   |`!weather`                                                   |
+|Moderation|`!ban` `!unban` `!kick` `!mute`  `!warn` `!warns` `!annonce` |
+|Musique   |`!play` `!pause` `!skip` `!remove`                           |
+|Chat      |`!help` `!sondage` `!twitch` `!profil`                       |
+|Random    |`!pof` `!roll` `!meme` `!ping`                               |
+|Météo     |`!météo`                                                     |
 
-# Libraries version
-| Library | discord |discord.py|  PyNaCl |requests |  wheel  |youtube-dl |
-|---------|---------|----------|---------|---------|---------|-----------|
-| Version |  1.0.1  |   1.4.1  |  1.4.0  |  2.24.0 |  0.34.2 |2020.6.16.1|
+# Version des librairies
+| Librarie | discord |discord.py|  PyNaCl |requests |  wheel  |youtube-dl |
+|----------|---------|----------|---------|---------|---------|-----------|
+|  Version |  1.0.1  |   1.4.1  |  1.4.0  |  2.24.0 |  0.34.2 |2020.6.16.1|
 
-# About the announce command
-This command allows you to broadcast announcements.<br>
-If it contains the following links, the announce will contain a special field:
+# A propos de la commande `!annonce`
+Cette commande permet de faire des annonces.<br>
+Si elle contient certains liens, un nouveau champ apparaîtra et contiendra :
 
-|   Link Type   |                   Field content                  |
-|---------------|--------------------------------------------------|
-|Github Repo    |Description / Topics / Stars / Views              |
-|Discord Invites|Server name / Total Members / Total Online Members|
+|        Lien       |                   Contenu du champ               |
+|-------------------|--------------------------------------------------|
+|Repo Github        |Description / Topiques / Étoiles / Vues           |
+|Invitations discord|Server name / Total Members / Total Online Members|
 
-If you want to use the code, you'll have to:
-- Create a [Github personal API token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
-- Replace [this part](https://github.com/MrSpaar/discord-bot/blob/master/cogs/admin.py#L111) to:
+Pour réutiliser le code, il vous faut:
+- Créer un [Token personnel Github](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
+- Remplacer [cette partie](https://github.com/MrSpaar/discord-bot/blob/master/cogs/admin.py#L111) par:
   ```python
   g = Github('GITHUB_TOKEN')
   ```
 
-# About the weather command
-This command will give you a city's instant and 5 days forecast.<br>
-If you want to use the code, you'll have to:
-- Create a OpenWeatherMap [API key](https://home.openweathermap.org/api_keys)
-- Replace [this part](https://github.com/MrSpaar/discord-bot/blob/master/cogs/weather.py#L18-L21) to:
+# A propos de `!meteo`
+Cette commande donne des prévisions météo sur 5 jours.<br>
+Pour utiliser le code, il vous faut:
+- Créer une clé [API OpenWeatherMap](https://home.openweathermap.org/api_keys)
+- Remplacer [cette partie](https://github.com/MrSpaar/discord-bot/blob/master/cogs/weather.py#L18-L21) par:
   ```python
   def get_cast(city, forecast=False):
       key = "API_Key"
@@ -43,11 +43,11 @@ If you want to use the code, you'll have to:
       data  = rget(f"http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&APPID={key}").json()
   ```
 
-# About the twitch command
-This command allows you to search for streams by specifying a category and words.<br>
-If you want to use the code, you'll have to:
-- Get a Twitch token by [following those steps](https://dev.twitch.tv/docs/authentication)
-- Replace [this part](https://github.com/MrSpaar/discord-bot/blob/master/cogs/chat.py#L51-L54) to:
+# A propos de `!twitch`
+Cette commande permet de rechercher des streams depuis twitch, à partir de mots-clés.<br>
+Pour utiliser le code, il vous faut:
+- Créer un Token Twitch en [suivant ces étapes](https://dev.twitch.tv/docs/authentication)
+- Remplacer [cette partie](https://github.com/MrSpaar/discord-bot/blob/master/cogs/chat.py#L51-L54) par:
   ```python
   headers = {
       'Client-ID': "Client_ID",
