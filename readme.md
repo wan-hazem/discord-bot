@@ -1,7 +1,3 @@
-# Invite Links
-- You want the bot on your server? [Click this link](https://discord.com/api/oauth2/authorize?client_id=713781013830041640&permissions=334622423&scope=bot)
-- You have any ideas or issues with the bot? [Join the discord server](https://discord.gg/kGTku7H)
-
 # About the bot
 This is a pretty simple music bot written in Pyhton 3.8.3. It includes:
 
