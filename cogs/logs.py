@@ -65,6 +65,7 @@ class Logs(commands.Cog):
             "<class 'discord.ext.commands.errors.BotMissingPermissions'>": f"J'ai besoin de ces permissions : {perms} !",
             "<class 'discord.ext.commands.errors.BadArgument'>": 'Tu dois entrer un nombre entier!' if 'int' in str(error) else "Membre introuvable !",
             "<class 'discord.ext.commands.errors.CommandInvokeError'>": ''.join([value for key, value in invoke_errors.items() if key in str(error)]),
+            "<class 'discord.ext.commands.errors.MemberNotFound'>": 'Membre inexistant !\nAvez-vous essayé de le mentionner ?'
         }
         clean_error = errors[str(type(error))]
         if not clean_error:
