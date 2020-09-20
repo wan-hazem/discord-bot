@@ -6,15 +6,17 @@ Vous avez des idées, des recommendations ou des problèmes avec le bot ? [Rejoi
 C'est un bot *tout-en-un* écris en python (3.8.3) qui contient:
 
 | Categorie |                        Description                                          |
-|----------|------------------------------------------------------------------------------|
-|Moderation|`!ban` `!unban` `!kick` `!mute` `!regles` `!role` `!warn` `!warns` `!annonce` |
-|Musique   |`!play` `!pause` `!skip` `!remove`                                            |
-|Chat      |`!help` `!sondage` `!twitch` `!profil`                                        |
-|Random    |`!pof` `!roll` `!meme` `!ping`                                                |
-|Météo     |`!meteo`                                                                      |
+|-----------|-----------------------------------------------------------------------------|
+|Moderation |`!ban` `!unban` `!kick` `!mute` `!warn` `!warns` `!annonce`                  |
+|Setup      | `!regles` `role`                                                            |
+|Musique    |`!play` `!pause` `!skip` `!remove`                                           |
+|Chat       |`!help` `!sondage` `!twitch` `!profil`                                       |
+|Random     |`!pof` `!roll` `!meme` `!ping`                                               |
+|Météo      |`!meteo`                                                                     |
 
 Je travaille toujours sur ce bot, les prochaines fonctionnalités prévues sont :
 - Un système de niveaux et de monnaie
+- Un menu de roles
 - Commande de recherche (animes, articles wikipedia, repo github)
 - Commandes d'intéractions sociales (hug, pat, slap, ...)
 - Une commande pour traduire du texte
