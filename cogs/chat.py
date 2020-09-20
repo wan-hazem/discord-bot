@@ -47,8 +47,7 @@ class Chat(commands.Cog, name='Chat'):
             '🙏 Règle n°8': "Pas de mandiage de role. C'est juste une perte de temps et ça ne marchera jamais.",
             '📑 Règle n°9': "Repectez les [Guidelines de la Communauté Discord](https://discord.com/guidelines) et les [Conditions d'utilisation](https://discord.com/terms).",
         }
-        embed = Embed(title="📃 Règles du serveur:", color=0xa84300)
-        embed.set_footer(text="Appuie sur ✔️ pour être vérifié !")
+        embed = Embed(title="📃 Règles du serveur:", description='Appuie sur ✅ après avoir lu les règles :',color=0xa84300)
         for key, value in rules.items():
             embed.add_field(name=key, value=f"{value}\n", inline=False)
         await ctx.message.delete()
@@ -93,7 +92,8 @@ class Chat(commands.Cog, name='Chat'):
             'Authorization': f"Bearer {environ['TWITCH_TOKEN']}",
         }
         category = get(f'https://api.twitch.tv/kraken/search/games?query={game}', headers=headers).json()['games'][0]
-        embed = Embed(title=f":desktop: Streams ({category['name']}):", color=0x3498db)
+        embed = (Embed(title=f":desktop: Streams ({category['name']}):", color=0x3498db)
+                 .set_thumbnail(url=category['box']['medium']))
         response = get(f"https://api.twitch.tv/helix/streams?game_id={category['_id']}", headers=headers).json()
         for stream in response['data']:
             if keys:
@@ -112,18 +112,21 @@ class Chat(commands.Cog, name='Chat'):
             c.execute(f'SELECT WARNS FROM "{ctx.guild.id}" WHERE User_ID=?', (member.id,))
             entry = c.fetchone()
             warn_nb = len(entry.split('\n')) if entry else 0
-        flags = [str(flag)[10:].replace('_', ' ').capitalize() for flag in member.public_flags.all()]
+        flags = [str(flag)[10:].replace('_', ' ').title() for flag in member.public_flags.all()]
+        status = {'online': 'En ligne', 'offline': 'Hors ligne', 'invisible': 'Invisible', 'idle': 'Absent', 'dnd': 'Ne pas déranger'}
         embed = (Embed(color=0x1abc9c)
-                 .add_field(name='📥 Membre depuis', value=member.joined_at.strftime("%d %B, %Y"), inline=True)
+                 .add_field(name='📥 Membre depuis', value=member.joined_at.strftime("%d/%m/%Y"), inline=True)
                  .add_field(name='⌨️ Pseudo', value=f'{member.name}#{member.discriminator}', inline=True)
-                 .add_field(name='💡 Status', value=str(member.status).capitalize(), inline=True)
-                 .add_field(name='📝 Création du compte', value=member.created_at.strftime("%d %B, %Y"), inline=True)
-                 .add_field(name='🥇 Role principal', value=member.top_role.name, inline=True)
-                 .add_field(name='⚠️ Warns', value=f"{warn_nb} total warns")
+                 .add_field(name='💡 Status', value=status[str(member.status)], inline=True)
+                 .add_field(name='📝 Création du compte', value=member.created_at.strftime("%d/%m/%Y"), inline=True)
+                 .add_field(name='🥇 Role principal', value=member.top_role.mention, inline=True)
+                 .add_field(name='⚠️ Warns', value=f"{warn_nb} warns")
                  .add_field(name='🚩 Flags', value=', '.join(flags))
-                 .set_author(name=f"{ctx.author.display_name}'s profile", icon_url=ctx.author.avatar_url))
+                 .add_field(name='Activité', value=member.activity.name if member.activity else 'Rien')
+                 .set_author(name=f"Profil de {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+                 .set_thumbnail(url=member.avatar_url))
         if member.premium_since:
-            embed.add_field(name='📈 Booste depuis', value=member.premium_since.strftime("%d %B, %Y"), inline=True)
+            embed.add_field(name='📈 Booste depuis', value=member.premium_since.strftime("%d/%m/%Y"), inline=True)
         await ctx.send(embed=embed)
 
 
