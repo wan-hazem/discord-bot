@@ -65,7 +65,7 @@ class Logs(commands.Cog):
             "<class 'discord.ext.commands.errors.BotMissingPermissions'>": f"J'ai besoin de ces permissions : {perms} !",
             "<class 'discord.ext.commands.errors.BadArgument'>": 'Tu dois entrer un nombre entier!' if 'int' in str(error) else "Membre introuvable !",
             "<class 'discord.ext.commands.errors.CommandInvokeError'>": ''.join([value for key, value in invoke_errors.items() if key in str(error)]),
-            "<class 'discord.ext.commands.errors.MemberNotFound'>": 'Membre inexistant !\nAvez-vous essayé de le mentionner ?'
+            "<class 'discord.ext.commands.errors.MemberNotFound'>": 'Membre ou Role inexistant !\nAvez-vous essayé de le mentionner ?'
         }
         clean_error = errors[str(type(error))]
         if not clean_error:
@@ -88,11 +88,12 @@ class Logs(commands.Cog):
         if len(cmd_args)<2:
             cmd_args += ['', '']
         cmd_list = {
-            'warn': {'title': ':warning: Membre warn', 'desc':f"{ctx.author.mention} a warn {cmd_args[0]}\n**Raison:** {' '.join(cmd_args[1:])}", 'color': 0xe67e22},
-            'mute': {'title': ':mute: Membre muté', 'desc': f"{ctx.author.mention} a mute {cmd_args[0]}\n**Durée**: {cmd_args[1]}\n**Raison:** {' '.join(cmd_args[2:])}", 'color': 0xe74c3c},
-            'clear': {'title': ':wastebasket:  Messages effacés', 'desc': f"{ctx.author.mention} a supprimé {cmd_args[0]} messages.", 'color': 0x1f8b4c},
-            'poll': {'title': ':clipboard: Sondage créé', 'desc': f"Question: *{cmd_args[0]}*\nChoix: *{' / '.join(cmd_args[1:])}*\nPar {ctx.author.mention}",'color': 0x7289da},
-            'logs': {'title': f':printer: Logs {state}', 'desc': f'{ctx.author.mention} {state} les logs', 'color': 0x11806a},
+            'warn': {'title': '⚠️ Membre warn', 'desc':f"{ctx.author.mention} a warn {cmd_args[0]}\n**Raison:** {' '.join(cmd_args[1:])}", 'color': 0xe67e22},
+            'mute': {'title': '🔇 Membre muté', 'desc': f"{ctx.author.mention} a mute {cmd_args[0]}\n**Durée**: {cmd_args[1]}\n**Raison:** {' '.join(cmd_args[2:])}", 'color': 0xe74c3c},
+            'clear': {'title': '🗑️  Messages effacés', 'desc': f"{ctx.author.mention} a supprimé {cmd_args[0]} messages.", 'color': 0x1f8b4c},
+            'poll': {'title': '📋 Sondage créé', 'desc': f"Question: *{cmd_args[0]}*\nChoix: *{' / '.join(cmd_args[1:])}*\nPar {ctx.author.mention}",'color': 0x7289da},
+            'logs': {'title': f'🖨️ Logs {state}', 'desc': f'{ctx.author.mention} {state} les logs', 'color': 0x11806a},
+            'role': {'title': f'💾 Role "{cmd_args[0]}" modifié', 'desc': f'{ctx.author.mention} a défini {cmd_args[1]} pour "{cmd_args[0]}"', 'color': 0xa84300}
         }
 
         if not cmd in cmd_list.keys():
@@ -166,7 +167,7 @@ class Logs(commands.Cog):
         with connect('data.db') as conn:
             c = conn.cursor()
             c.execute("INSERT INTO logs (ID, State) VALUES (?, ?)", (guild.id, 0))
-            c.execute(f'CREATE TABLE IF NOT EXISTS "{guild.id}" (User_ID INTEGER, Warns TEXT)')
+            c.execute(f'CREATE TABLE IF NOT EXISTS "{guild.id}" (User_ID INTEGER, Warns TEXT, Mute INTEGER, Verif INTEGER)')
             conn.commit()
         channel = await self.bot.fetch_channel(747480897426817095)
         embed = (Embed(color=0xf1c40f)
